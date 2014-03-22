@@ -1,0 +1,32 @@
+{{extend 'layout.html'}}
+<h3>Welcome Agent</h3>
+<br/>
+<br/>
+<a class="btn btn-primary" href="{{=URL(r=request,f='approve_policies')}}">Approve pending policies</a>
+</br>
+</br>
+</br>
+</br>
+</br>
+<div align = "center">
+<b>Deals You Are Handling- </b>
+<b>{{=len(b)}}</b>
+</div>
+</br>
+</br>
+<table class = "table table-hover">
+<thead>
+<th>First name</th>
+<th>Second name</th>
+<th>Policy name</th>
+</thead>
+{{for i in range(len(name)):}}
+<tr>
+<td>{{=name[i]['first_name']}}</td>
+<td>{{=name[i]['last_name']}}</td>
+{{if i < len(policy):}}
+<td>{{=policy[i]['name']}}</td>
+{{pass}}
+</tr>
+{{pass}}
+</table>

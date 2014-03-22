@@ -1,0 +1,19 @@
+{{extend 'layout.html'}}
+<table class="table table-hover">
+{{count = 0}}
+{{ if len(a)==0:}}
+<h3>Sorry there are no policies left to be validated</h3>
+{{else:}}
+<h3>Number of policies to be validated : {{=len(a)}}</h3>
+{{for i in range(len(a)):}}
+<tr>
+	<td>{{=name[count]['first_name']}}</td>
+	<td>{{=name[count]['last_name']}}</td>
+	<td>{{=name[count]['email']}}</td>
+	<td>{{=a[i]['user_id']}}</td>
+	<td>{{=a[i]['id']}}</td>
+	<td><a class="btn btn-primary" href="{{=URL(r=request,f='approve_confirmpolicy' , args=(a[i]['id'],a[i]['user_id']))}}">Approve</a></td>
+</tr>
+{{pass}}
+{{pass}}
+</table>

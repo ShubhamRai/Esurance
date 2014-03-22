@@ -1,0 +1,15 @@
+{{extend 'layout.html'}}
+<h3>List of newly registered agents of your company</h3>
+<table class="table table-hover">
+{{ count = 0}}
+{{for i in range(0,len(a)):}}
+<tr>
+	<td>{{=name[i]['first_name']}}</td>
+	<td>{{=name[i]['last_name']}}</td>
+	<td>{{=name[i]['email']}}</td>
+	<td><a class="btn btn-primary" href="{{=URL(r=request,f='approve_agentconfirm',args=a[i]['user_id'] )}}">Approve</a></td>
+</tr>
+{{ count = count + 1 }}
+{{pass}}
+</table>
+

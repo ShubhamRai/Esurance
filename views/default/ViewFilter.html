@@ -1,0 +1,24 @@
+{{extend 'layout.html'}}
+<html>
+{{if len(b):}}
+<table class='table table-hover'>
+<th>Name</th>
+<th>Description</th>
+<th>Actions</th>
+{{for i in range(len(b)):}}
+<tr>
+<td>{{=b[i]['name']}}</td>
+<td>{{=b[i]['policy_description']}}</td>
+<td>
+<a class='btn btn-success' href={{=URL(r=request,f='buy_policy',args=(b[i]['type_policy'],b[i]['id']))}}>Buy</a>
+</br>
+</br>
+<a class='btn btn-primary' href={{=URL(r=request,f='AddCompare',args=b[i]['id'])}}>Compare</a>
+</td>
+</tr>
+{{pass}}
+</table>
+{{else:}}
+<h3> OOOPS !!<br/> No Matches. <a href={{=URL('FilterPolicy')}}> Try Again </a> </h3>
+{{pass}}
+</html>

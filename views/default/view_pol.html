@@ -1,0 +1,129 @@
+{{extend 'layout.html'}}
+
+<div align="center">
+<b>Name of Policy -</b>
+{{=i['name']}}
+</br>
+</br>
+Policy Type - 
+
+{{if int(i['type_policy'])==1:}}
+Term Policy
+{{pass}}
+{{if int(i['type_policy'])==2:}}
+Child Policy
+{{pass}}
+{{if int(i['type_policy'])==3:}}
+Retirement Policy
+{{pass}}
+{{if int(i['type_policy'])==4:}}
+Individual Health Policy
+{{pass}}
+{{if int(i['type_policy'])==5:}}
+Senior Citizen Health Plan
+{{pass}}
+{{if int(i['type_policy'])==6:}}
+Family Plan
+{{pass}}
+{{if int(i['type_policy'])==7:}}
+House Insurance
+{{pass}}
+{{if int(i['type_policy'])==8:}}
+Automobile Insurance
+{{pass}}
+{{if int(i['type_policy'])==9:}}
+Travel Insurance
+{{pass}}
+</div>
+</br>
+</br>
+</br>
+</br>
+<table class= "table table-hover">
+<thead>
+<th>Policy Description</th>
+</thead>
+<tr>
+<td>{{=i['policy_description']}}</td>
+</tr>
+</table>
+{{if int(i['type_policy'])<7:}}
+<table class= "table table-hover">
+<thead>
+<th>Cover</th>
+<th>Age</th>
+<th>Premium</th>
+<th>Income</th>
+<th>Duration</th>
+</thead>
+<tr>
+<td>{{=i['cover']}}</td>
+<td>{{=i['age']}}</td>
+<td>{{=i['premium']}}</td>
+<td>{{=i['target_income']}}</td>
+<td>{{=i['duration']}}</td>
+</tr>
+</table>
+{{pass}}
+{{if int(i['type_policy']) > 4 and int(i['type_policy']) < 6:}}
+<table class= "table table-hover">
+<thead>
+<th>Cancer</th>
+<th>Tobacco</th>
+<th>Critical</th>
+<th>Heart</th>
+</thead>
+<tr>
+<td>{{=i['cancer']}}</td>
+<td>{{=i['tobbaco']}}</td>
+<td>{{=i['critical']}}</td>
+<td>{{=i['heart']}}</td>
+</tr>
+</table>
+{{pass}}
+{{if i['type_policy']==7:}}
+</br>
+<table class= "table table-hover">
+<thead>
+<th>Year Built</th>
+<th>Price</th>
+</thead>
+<tr>
+<td>{{=i['year_build']}}</td>
+<td>{{=i['price']}}</td>
+<td></td>
+</tr>
+</table>
+{{pass}}
+
+{{if i['type_policy']==8:}}
+</br>
+<table class= "table table-hover">
+<thead>
+<th>Vehicle Type (Wheels)</th>
+<th>Price</th>
+</thead>
+<tr>
+<td>{{=i['no_of_wheels']}}</td>
+<td>{{=i['price']}}</td>
+<td></td>
+</tr>
+</table>
+{{pass}}
+
+{{if i['type_policy']==9:}}
+</br>
+<table class= "table table-hover">
+<thead>
+<th>Travel Type</th>
+</thead>
+<tr>
+<td>{{=i['travel_type']}}</td>
+<td></td>
+</tr>
+</table>
+{{pass}}
+</br>
+</br>
+<font size ="1">Note : I/We agree that by use of the above-mentioned services, I/We shall be deemed to have agreed to all the above terms and conditions and such terms and conditions shall be binding on me/us in the same manner as if I/We have agreed to the same.The Company reserves the right to withdraw the services mentioned herein any time whatsoever.
+</font>

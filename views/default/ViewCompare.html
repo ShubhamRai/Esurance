@@ -1,0 +1,16 @@
+{{extend 'layout.html'}}
+<html>
+<a class='btn btn-primary' href={{=URL('clear')}}>Clear Choices</a>
+<table class='table table-hover'>
+{{ for i in range(len(c)):}}
+<th>{{=c[i]}}</th>
+{{pass}}
+{{for i in range(len(b)):}}
+<tr>
+{{for j in range(len(b[i])):}}
+<td>{{=b[i][j]}}</td>
+{{pass}}
+</tr>
+{{pass}}
+</table>
+</html>

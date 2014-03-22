@@ -1,0 +1,13 @@
+{{extend 'layout.html'}}
+<html>
+<table class='table table-hover'>
+{{for i in range (len(t)):}}
+<tr>
+<td>{{=t[i]['name']}}</td>
+<td><a href="{{=URL(r=request,f='buy_policy',args=(2,t[i]['id']))}}">Buy Policy</a></td>
+<td><a href="{{=URL(r=request,f='AddCompare',args=t[i]['id'])}}">Compare Policy</a></td>
+
+</tr>
+{{pass}}
+</table>
+</html>

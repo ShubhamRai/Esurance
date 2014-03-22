@@ -1,0 +1,465 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.NameError'> global name 'date' is not defined"
+p3
+sS'layer'
+p4
+S'/home/samfisher/iiith/Semester 2/web2py/applications/Project/controllers/default.py'
+p5
+sS'code'
+p6
+S'# -*- coding: utf-8 -*-\n# this file is released under public domain and you can use without limitations\n\n#########################################################################\n## This is a samples controller\n## - index is the default action of any application\n## - user is required for authentication and authorization\n## - download is for downloading files uploaded in the db (does streaming)\n## - call exposes all registered services (none by default)\n#########################################################################\nimport datetime\nimport time\n\ndef index():\n\tsession.compare=[]\n\tif auth.user:\n\t\tif auth.user.r_type==\'customer\':\n\t\t\tprint \'customer incoming\'\n\t\t\tredirect(URL(r=request,f=\'home\'))\n\t\telif auth.user.r_type==\'agent\':\n\t\t\tprint \'agent incoming\'\n\t\t\tredirect(URL(r=request,f=\'agent_home\'))\n\t\telif auth.user.r_type==\'manager\':\n\t\t\tprint \'manager incoming\'\n\t\t\tredirect(URL(r=request,f=\'manager_home\'))\n\telse:\n\t\tredirect(URL(r=request,f=\'home\'))\n    \treturn dict()\n\ndef approve_agent():\n\tb=db(db.company.mgr_id==auth.user.id).select()[0]\n\ta=db((db.works_for.company_id==b[\'id\'])).select()\n\tname=[]\n\tfin=[]\n\tfor i in range(0,len(a)):\n\t\tif a[i][\'approve\']==0:\n\t\t\tfin.append(a[i])\n\t\t\tc=db(db.auth_user.id==a[i][\'user_id\']).select()\n\t\t\tname.append(c[0])\n\treturn dict(a=fin,name=name)\n\ndef approve_agentconfirm():\n\tinp=request.args(0)\n\tdb(db.works_for.user_id==inp).update(approve=1)\n\tsession.msg="Agent Confirmation Done!"\n\tredirect(URL(\'index\'))\n\n#manager_home\ndef manager_home():\n\tif session.msg:\n\t\tresponse.flash=session.msg\n\t\tsession.msg=\'\'\n\ta=db(db.company.mgr_id==auth.user.id).select()\n\tif len(a)==0:\n\t\tredirect(URL(\'AddCompany\'))\n\t\n\treturn dict()\ndef AddCompany():\n\tresponse.flash=T("Add Company Details")\n\tdb.company.mgr_id.writable=False\n\tdb.company.mgr_id.readable=False\t\n\tform=SQLFORM.factory(db.company)\n\tif form.process().accepted:\n\t\ta=db.BuyInsurance._filter_fields(form.vars)\n\t\ta[\'mgr_id\']=auth.user.id\n\t\tdb.company.insert(**a)\n\t\tredirect(URL(\'index\'))\n\n\treturn dict(form=form)\n\ndef add_new_policy():\n\treturn dict()\n\ndef add_pol():\n\tinp=int(request.args(0))\n\tdb.Insurance.max_cover.requires=IS_INT_IN_RANGE(0,10000000)\n\tdb.Insurance.min_cover.requires=IS_INT_IN_RANGE(0,10000000)\n\tdb.Insurance.type_policy.readable=False\n\tdb.Insurance.type_policy.writable=False\n\tdb.Insurance.company_id.writable=False\n\tdb.Insurance.company_id.readable=False\n\tdb.Insurance.premium.readable=False\n\t\n\tdb.Insurance.heart.writable=False\n\tdb.Insurance.min_age.writable=False\n\tdb.Insurance.max_age.writable=False\n\tdb.Insurance.target_income.writable=False\n\tdb.Insurance.marital_status.writable=False\n\tdb.Insurance.cancer.writable=False\n\tdb.Insurance.tobbaco.writable=False\n\tdb.Insurance.critical.writable=False\n\tdb.Insurance.min_members.writable=False\n\tdb.Insurance.max_members.writable=False\n\tdb.Insurance.year_build.writable=False\n\tdb.Insurance.no_of_wheels.writable=False\n\tdb.Insurance.min_price.writable=False\n\tdb.Insurance.max_price.writable=False\n\tdb.Insurance.min_year.writable=False\n\tdb.Insurance.travel_type.writable=False\n\tdb.Insurance.premium.writable=False\n\tdb.Insurance.max_limit.writable=False\n\t\n\t\n\t\n\tdb.Insurance.heart.readable=False\n\tdb.Insurance.min_age.readable=False\n\tdb.Insurance.max_age.readable=False\n\tdb.Insurance.min_year.readable=False\n\tdb.Insurance.target_income.readable=False\n\tdb.Insurance.marital_status.readable=False\n\tdb.Insurance.cancer.readable=False\n\tdb.Insurance.tobbaco.readable=False\n\tdb.Insurance.critical.readable=False\n\tdb.Insurance.min_members.readable=False\n\tdb.Insurance.max_members.readable=False\n\tdb.Insurance.year_build.readable=False\n\tdb.Insurance.no_of_wheels.readable=False\n\tdb.Insurance.min_price.readable=False\n\tdb.Insurance.max_price.readable=False\n\tdb.Insurance.travel_type.readable=False\n\tdb.Insurance.max_limit.readable=False\n\t\n\tprint inp\t\n\tif inp==1:\n\t\t#term insurance\n\t\tprint \'enter\'\n\t\tdb.Insurance.min_age.writable=True\n\t\tdb.Insurance.max_age.writable=True\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.marital_status.writable=True\n\t\tdb.Insurance.min_age.readable=True\n\t\tdb.Insurance.max_age.readable=True\n\t\tdb.Insurance.target_income.readable=True\n\t\tdb.Insurance.marital_status.readable=True\n\telif inp==2:\n\t\t#retirement plans\n\t\tdb.Insurance.min_duration.writable=False\n\t\tdb.Insurance.max_duration.writable=False\n\t\tdb.Insurance.min_duration.readable=False\n\t\tdb.Insurance.max_duration.readable=False\n\t\tdb.Insurance.min_age.writable=True\n\t\tdb.Insurance.max_age.writable=True\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.marital_status.writable=True\n\t\tdb.Insurance.min_age.readable=True\n\t\tdb.Insurance.max_age.readable=True\n\t\tdb.Insurance.target_income.readable=True\n\t\tdb.Insurance.marital_status.readable=True\n\telif inp==3:\n\t\t#child plans\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.target_income.readable=True\n\t\tdb.Insurance.max_age.writable=True\n\t\tdb.Insurance.max_age.readable=True\n\telif inp==4:\n\t\t#Health plan\n\t\tdb.Insurance.heart.writable=True\n\t\tdb.Insurance.min_age.writable=True\n\t\tdb.Insurance.max_age.writable=True\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.marital_status.writable=True\n\t\tdb.Insurance.cancer.writable=True\n\t\tdb.Insurance.tobbaco.writable=True\n\t\tdb.Insurance.critical.writable=True\n\t\tdb.Insurance.heart.readable=True\n\t\tdb.Insurance.min_age.readable=True\n\t\tdb.Insurance.max_age.readable=True\n\t\tdb.Insurance.target_income.readable=True\n\t\tdb.Insurance.marital_status.readable=True\n\t\tdb.Insurance.cancer.readable=True\n\t\tdb.Insurance.tobbaco.readable=True\n\t\tdb.Insurance.critical.readable=True\n\telif inp==5:\n\t\t#senior\n\t\tdb.Insurance.heart.writable=True\n\t\tdb.Insurance.min_age.writable=True\n\t\tdb.Insurance.max_age.writable=True\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.marital_status.writable=True\n\t\tdb.Insurance.cancer.writable=True\n\t\tdb.Insurance.tobbaco.writable=True\n\t\tdb.Insurance.critical.writable=True\n\t\tdb.Insurance.heart.readable=True\n\t\tdb.Insurance.min_age.readable=True\n\t\tdb.Insurance.max_age.readable=True\n\t\tdb.Insurance.target_income.readable=True\n\t\tdb.Insurance.marital_status.readable=True\n\t\tdb.Insurance.cancer.readable=True\n\t\tdb.Insurance.tobbaco.readable=True\n\t\tdb.Insurance.critical.readable=True\n\telif inp==6:\n\t\t#family plans\n\t\tdb.Insurance.min_members.writable=True\n\t\tdb.Insurance.max_members.writable=True\n\t\tdb.Insurance.min_members.readable=True\n\t\tdb.Insurance.max_members.readable=True\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.target_income.readable=True\n\n\n\telif inp==7:\n\t\t#house\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.target_income.readable=True\n\t\tdb.Insurance.year_build.writable=True\n\t\tdb.Insurance.year_build.readable=True\n\n\telif inp==8:\n\t\t#motor insuranace\n\t\tdb.Insurance.min_duration.writable=False\n\t\tdb.Insurance.max_duration.writable=False\n\t\tdb.Insurance.min_duration.readable=False\n\t\tdb.Insurance.max_duration.readable=False\n\t\tdb.Insurance.no_of_wheels.writable=True\n\t\tdb.Insurance.min_price.writable=True\n\t\tdb.Insurance.max_price.writable=True\n\t\tdb.Insurance.no_of_wheels.readable=True\n\t\tdb.Insurance.min_price.readable=True\n\t\tdb.Insurance.max_price.readable=True\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.target_income.readable=True\n\n\telif inp==9:\n\t\t#travel plans\n\t\tdb.Insurance.travel_type.writable=True\n\t\tdb.Insurance.max_limit.writable=True\n\t\tdb.Insurance.target_income.writable=True\n\t\tdb.Insurance.marital_status.writable=True\n\t\tdb.Insurance.travel_type.readable=True\n\t\tdb.Insurance.max_limit.readable=True\n\t\tdb.Insurance.target_income.readable=True\n\t\tdb.Insurance.marital_status.readable=True\n\tform=SQLFORM.factory(db.Insurance)\n\tif form.process().accepted:\n\t\ta=db.Insurance._filter_fields(form.vars)\n\t\ta[\'type_policy\']=inp\n\t\tsel = db(db.company.mgr_id==auth.user.id).select()[0]\n\t\ta[\'company_id\']=sel[\'id\']\n\t\tdb.Insurance.insert(**a)\t\n\t\tredirect(URL(\'home\'))\n\treturn dict(form=form)\n\ndef register_agent():\n\tinp=request.args(0)\n\tprint inp\n\tdb.works_for.user_id.readable=False\n\tdb.works_for.approve.readable=False\n\tdb.works_for.approve.writable=False\n\tdb.works_for.user_id.writable=False\n\tform=SQLFORM.factory(db.works_for)\n\tif form.process().accepted:\n\t\ta=db.works_for._filter_fields(form.vars)\n\t\ta[\'user_id\']=inp\n\t\ta[\'approve\']=0\n\t\tdb.works_for.insert(**a)\t\n\t\tredirect(URL(\'index\'))\n\treturn dict(form=form)\n#verify the policies\ndef approve_confirmpolicy():\n\tinp=request.args(0)\n\tinp2=request.args(1)\n\tdb(db.BuyInsurance.id==inp).update(approve=True)\n\tdb.handles.insert(agent_id=auth.user.id,user_id=inp2,policy_id=inp)\n\tsession.msg="Policy Confirmation Done!"\n\tredirect(URL(\'index\'))\ndef view_pol():\n\ti=request.args(0)\n\ta=db(db.BuyInsurance.id==i).select()[0]\n\treturn dict(i=a)\ndef approve_policies():\n\ta=db(db.BuyInsurance.approve==False).select()\n\tname=[]\n\tfor i in range(0,len(a)):\n\t\tb=db(db.auth_user.id==a[i][\'user_id\']).select()[0]\n\t\tname.append(b)\n\tprint name\n\treturn dict(a=a,name=name)\n\n\n#agent_home\ndef agent_home():\n\tb=[]\n\ta=db(db.works_for.user_id==auth.user.id).select()\n\tif len(a)==0:\n\t\tredirect(URL(r=request , f=\'register_agent\' , args=auth.user.id))\n\telse:\n\t\tflag=1\n\t\tif session.msg:\n\t\t\tresponse.flash=T(session.msg)\n\t\t\tsession.msg=\'\'\n\t\tif a[0][\'approve\']==False:\n\t\t\tflag=1\n\t\telse:\n\t\t\tflag=0\n\t\n\treturn dict(flag=flag)\n#main_home\ndef home():\n\tb=[]\n\ta=[]\n\tif auth.user:\n\t\tif auth.user.r_type!=\'customer\':\n\t\t\tredirect(URL(\'index\'))\n\t\telse:\n\t\t\ta=db(db.BuyInsurance.user_id==auth.user.id and db.BuyInsurance.approve==True).select()\n\t\t\tb=db(db.BuyInsurance.user_id==auth.user.id and db.BuyInsurance.approve==False).select()\n\treturn dict(a=a,b=b)\n\ndef AddCompare():\n\tID=int(request.args(0))\n\tif len(session.compare)==0 or ID not in session.compare:\n\t\tsession.compare.append(ID)\n\tredirect(URL(\'ViewCompare\'))\ndef ViewCompare():\n\ta=[]\n\tfor i in range(len(session.compare)):\n\t\ta.append(db(db.Insurance.id==session.compare[i]).select()[0])\n\t\tprint  "Session Compare",session.compare[i]\n\tt=[]\n\tb=list(a)\n\tprint "b= ",b\n\ta=[]\n\tfor i in range(len(b)):\n\t\ta.append([])\n\td=[\'name\',\'policy_description\',\'min_age\',\'max_age\',\'min_cover\',\'max_cover\',\'min_members\',\'max_members\',\'min_duration\',\'max_duration\',\'no_of_wheels\',\'min_price\',\'max_price\',\'travel_type\',\'heart\',\'cancer\',\'critical\']\n\te=[\'Name\',\'Description\',\'Minimum Age\',\'Maximum Age\',\'Minimum Cover\',\'Maximum Cover\',\'Minimum Family Size\',\'Maximum Family Size\',\'Minimum Duration\',\'Maximum Duration\',\'Number of Wheels\',\'Minimum Price\',\'Maximum Price\',\'Travel Type\',\'Heart Patients\',\'Cancer Patients\',\'Critical Patients\']\n\tc=[]\n\tif len(b)!=0:\n\t\tfor k in range(len(d)):\n\t\t\tj=d[k]\n\t\t\tflag=False\n\t\t\tfor i in range(len(b)):\n\t\t\t\tif b[i][j]==\'\' or b[i][j]==\'None\' or b[i][j]==\'Not Applicable\' or b[i][j]==None:\n\t\t\t\t\tflag=flag\n\t\t\t\telse:\n\t\t\t\t\tflag=True\n\t\t\tif flag==True and j!=\'update_record\' and j!=\'id\' and j!= \'company_id\' and j!=\'delete_record\' and j!=\'type_policy\':\n\t\t\t \tfor i in range(len(b)):\n\t\t\t\t\tprint b[i][j]\n\t\t\t\t\tif b[i][j]==\'None\' or b[i][j]==None or b[i][j]==\'\':\n\t\t\t\t\t\ta[i].append(\'Not Applicable\')\n\t\t\t\t\telse:\n\t\t\t\t\t\ta[i].append(b[i][j])\n\t\t\t\tc.append(e[k])\n\treturn dict(b=a,c=c)\ndef user():\n    """\n    exposes:\n    http://..../[app]/default/user/login\n    http://..../[app]/default/user/logout\n    http://..../[app]/default/user/register\n    http://..../[app]/default/user/profile\n    http://..../[app]/default/user/retrieve_password\n    http://..../[app]/default/user/change_password\n    use @auth.requires_login()\n        @auth.requires_membership(\'group name\')\n        @auth.requires_permission(\'read\',\'table name\',record_id)\n    to decorate functions that need access control\n    """\n    return dict(form=auth())\n\n\ndef download():\n    """\n    allows downloading of uploaded files\n    http://..../[app]/default/download/[filename]\n    """\n    \n    return response.download(request, db)\n\n\ndef call():\n    """\n    exposes services. for example:\n    http://..../[app]/default/call/jsonrpc\n    decorate with @services.jsonrpc the functions to expose\n    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv\n    """\n    return service()\n\n\n@auth.requires_signature()\ndef data():\n    """\n    http://..../[app]/default/data/tables\n    http://..../[app]/default/data/create/[table]\n    http://..../[app]/default/data/read/[table]/[id]\n    http://..../[app]/default/data/update/[table]/[id]\n    http://..../[app]/default/data/delete/[table]/[id]\n    http://..../[app]/default/data/select/[table]\n    http://..../[app]/default/data/search/[table]\n    but URLs must be signed, i.e. linked with\n      A(\'table\',_href=URL(\'data/tables\',user_signature=True))\n    or with the signed load operator\n      LOAD(\'default\',\'data.load\',args=\'tables\',ajax=True,user_signature=True)\n    """\n    return dict(form=crud())\n\ndef life_policy_details():\n\treturn dict()\n\n\t\ndef term_policy():\n\n\tterm_policy=db(db.Insurance.type_policy==1).select()\n\n\treturn dict(t=term_policy)\n\ndef retirement_policy():\n\n\tretirement_policy=db(db.Insurance.type_policy==2).select()\n\n\treturn dict(t=retirement_policy)\n\ndef child_policy():\n\n\tchild_policy=db(db.Insurance.type_policy==3).select()\n\n\treturn dict(t=child_policy)\n\n\n\ndef health_policy_details():\n\treturn dict()\n\n\ndef health_policy():\n\n\thealth_policy=db(db.Insurance.type_policy==4).select()\n\n\treturn dict(t=health_policy)\n\t\ndef seniorhealth_policy():\n\n\tseniorhealth_policy=db(db.Insurance.type_policy==5).select()\n\n\treturn dict(t=seniorhealth_policy)\n\t\ndef family_policy():\n\n\tfamily_policy=db(db.Insurance.type_policy==6).select()\n\n\treturn dict(t=family_policy)\n\t\n\n\ndef other_policy_details():\n\treturn dict()\n\n\ndef home_policy():\n\n\thome_policy=db(db.Insurance.type_policy==7).select()\n\t\n\treturn dict(t=home_policy)\n\ndef motor_policy():\n\n\tmotor_policy=db(db.Insurance.type_policy==8).select()\n\t\n\treturn dict(t=motor_policy)\n\ndef travel_policy():\n\n\ttravel_policy=db(db.Insurance.type_policy==9).select()\n\t\n\treturn dict(t=travel_policy)\n@auth.requires_login()\ndef buy_policy():\n\trID=int(request.args(0))\n\tID=int(request.args(1))\n\tsel=db(db.Insurance.id==ID).select()[0]\n\tID=rID\n\tdb.BuyInsurance.cover.requires=IS_INT_IN_RANGE(sel[\'min_cover\'],sel[\'max_cover\'])\n\tdb.BuyInsurance.duration.requires=IS_INT_IN_RANGE(sel[\'min_duration\'],sel[\'max_duration\'])\n\tdb.BuyInsurance.age.requires=IS_INT_IN_RANGE(sel[\'min_age\'],sel[\'max_age\'])\n\tdb.BuyInsurance.premium.requires=IS_INT_IN_RANGE(10,10000)\n\tdb.BuyInsurance.company_id.writable=False\n\tdb.BuyInsurance.user_id.writable=False\n\tdb.BuyInsurance.type_policy.writable=False\n\tdb.BuyInsurance.name.writable=False\n\tdb.BuyInsurance.logo.writable=False\n\tdb.BuyInsurance.policy_description.writable=False\n\tdb.BuyInsurance.extra_benefits.writable=False\n\tdb.BuyInsurance.heart.writable=False\n\tdb.BuyInsurance.cancer.writable=False\n\tdb.BuyInsurance.tobbaco.writable=False\n\tdb.BuyInsurance.critical.writable=False\n\tdb.BuyInsurance.members.writable=False\n\tdb.BuyInsurance.year_build.writable=False\n\tdb.BuyInsurance.no_of_wheels.writable=False\n\tdb.BuyInsurance.approve.writable=False\n\tdb.BuyInsurance.price.writable=False\n\tdb.BuyInsurance.travel_type.writable=False\n\t\n\tdb.BuyInsurance.company_id.readable=False\n\tdb.BuyInsurance.approve.readable=False\n\tdb.BuyInsurance.user_id.readable=False\n\tdb.BuyInsurance.type_policy.readable=False\n\tdb.BuyInsurance.name.readable=False\n\tdb.BuyInsurance.logo.readable=False\n\tdb.BuyInsurance.policy_description.readable=False\n\tdb.BuyInsurance.extra_benefits.readable=False\n\tdb.BuyInsurance.heart.readable=False\n\tdb.BuyInsurance.cancer.readable=False\n\tdb.BuyInsurance.tobbaco.readable=False\n\tdb.BuyInsurance.critical.readable=False\n\tdb.BuyInsurance.members.readable=False\n\tdb.BuyInsurance.year_build.readable=False\n\tdb.BuyInsurance.no_of_wheels.readable=False\n\tdb.BuyInsurance.price.readable=False\n\tdb.BuyInsurance.travel_type.readable=False\t\n\tif ID==1 or ID==2 or ID==3:\n\t\ta=1\n\n\t\t\n\telif ID==4 or ID==5:\n\t\tdb.BuyInsurance.heart.readable=True\n\t\tdb.BuyInsurance.cancer.readable=True\n\t\tdb.BuyInsurance.tobbaco.readable=True\n\t\tdb.BuyInsurance.critical.readable=True\n\t\t\n\t\tdb.BuyInsurance.heart.writable=True\n\t\tdb.BuyInsurance.cancer.writable=True\n\t\tdb.BuyInsurance.tobbaco.writable=True\n\t\tdb.BuyInsurance.critical.writable=True\n\t\t\n\telif ID==6:\n\t\t\n\t\tdb.BuyInsurance.members.readable=True\n\t\tdb.BuyInsurance.members.writable=True\n\n\telif ID==7:\n\t\t\n\t\tdb.BuyInsurance.year_build.readable=True\n\t\tdb.BuyInsurance.year_build.writable=True\n\n\telif ID==8:\n\t\t\n\t\tdb.BuyInsurance.no_of_wheels.readable=True\n\t\tdb.BuyInsurance.price.readable=True\n\t\tdb.BuyInsurance.no_of_wheels.writable=True\n\t\tdb.BuyInsurance.price.writable=True\n\n\telif ID==9:\n\t\n\t\tdb.BuyInsurance.travel_type.writable=True\n\t\tdb.BuyInsurance.travel_type.readable=True\n\t\tdb.BuyInsurance.duration.label=\'Travel Duration\'\n\tform=SQLFORM.factory(db.BuyInsurance)\n\tif form.process().accepted:\n\t\ta=db.BuyInsurance._filter_fields(form.vars)\n\t\ta[\'user_id\']=auth.user.id\n\t\ta[\'type_policy\']=sel[\'type_policy\']\n\t\ta[\'company_id\']=sel[\'company_id\']\n\t\ta[\'name\']=sel[\'name\']\n\t\ta[\'logo\']=sel[\'logo\']\n\t\ta[\'policy_description\']=sel[\'policy_description\']\n\t\tprint a\n\t\tdb.BuyInsurance.insert(**a)\t\n\t\tsession.msg="You have successfully booked the policy"\n\t\t#\t\tInserting For scheduler\n\t\ta={}\n\t\ta=[auth.user.email,form.vars.name,date(request.now+datetime.delta(30))]\n\t\tdb.scheduler_task.insert(\n\t\tapplication_name=\'Project/appadmin\',\n\t\ttask_name=form.vars.id+\'+\'+auth.user.email,\n\t\tgroup_name=\'main\',\n\t\tstart_time=form.vars.pen+datetime.timedelta(-1),\n\t\tstop_time=form.vars.pen,\n\t\tstatus=\'QUEUED\',\n\t\tfunction_name=\'f\',\n\t\tenabled=True,\n\t\tperiod=60,\n\t\targs=gluon.contrib.simplejson.dumps(a))\n\t\tredirect(URL(\'home\'))\n\n\treturn dict(form=form)\ndef FilterPolicy():\n\ta=[]\n\tp=db(db.company.id>0).select()\n\tfor i in range(len(p)):\n\t\ta.append(p[i][\'name\'])\n\ta.append(\'All\')\n\tform=SQLFORM.factory(\n\t\t\tField(\'Type\',requires=IS_IN_SET((\'Term Insurance\',\'Retirement Plan\',\'Child Plan\',\'Health Insurance\',\'Senior Citizen\',\'Family Medicalim Insurance\',\'Home Insurance\',\'Automobile Insurance\',\'Travel Insurance\',\'All\')),default=\'All\'),\n\t\t\tField(\'Duration\',\'integer\'),\n\t\t\tField(\'Company\',\'string\',requires=IS_IN_SET(a),default=\'All\'),\n\t\t\tField(\'Age\',\'integer\'),\n\t\t\tField(\'Cover\',\'integer\'),\n\t\t\tField(\'Income\',\'integer\',requires=IS_IN_SET((\'upto 3 lakhs\',\'3-5 lakhs\',\'5-10 lakhs\',\'10+ lakhs\',\'Any\')),default=\'Any\'))\n\tif form.process().accepted:\n\t\tprint form.vars\n\t\t\n\t\tredirect(URL(r=request,f=\'ViewFilter\',args=(form.vars.Type,form.vars.Duration,form.vars.Company,form.vars.Age,form.vars.Cover,form.vars.Income)))\n\treturn dict(form=form)\ndef ViewFilter():\n\ta=[]\n\ta.append(request.args(0))\n\ta.append(request.args(1))\n\ta.append(request.args(2))\n\ta.append(request.args(3))\n\ta.append(request.args(4))\n\ta.append(request.args(5))\n\tTYPE=0\n\ta[2]=a[2].replace("_"," ")\n\tif a[0]==\'Term_Insurance\':\n\t\tTYPE=1\t\n\telif a[0]==\'Retirement_Plan\':\n\t\tTYPE=2\n\telif a[0]==\'Child_Plan\':\n\t\tTYPE=3\n\telif a[0]==\'Health_Insurance\':\n\t\tTYPE=4\n\telif a[0]==\'Senior_Citizen\':\n\t\tTYPE=5\n\telif a[0]==\'Family_Medicalim_Insurance\':\n\t\tTYPE=6\n\telif a[0]==\'Home_Insurance\':\n\t\tTYPE=7\n\telif a[0]==\'Automobile_Insurance\':\n\t\tTYPE=8\n\telif a[0]==\'Travel_Insurance\':\n\t\tTYPE=9\n\tprint a ,"Type Of Policy = ", TYPE\n\tif TYPE!=0:\n\t\tsel=db(db.Insurance.type_policy==TYPE).select()\n\t\tb=sel\n\t\tc=[]\n\t\tprint sel\n\telse :\n\t\tsel=db(db.Insurance.id>0).select()\n\t\tb=sel\n\t\tc=[]\n\t\tprint sel\n\tif a[1]==\'None\':\n\t\tb=b\t\n\telse:\n\t\tsel=db(db.Insurance.min_duration<=int(a[1]) and db.Insurance.max_duration>=int(a[1])).select()\n\t\tsel=list(sel)\n\t\tfor i in sel:\n\t\t\tif( i in b):\n\t\t\t\tc.append(i)\n\t\tb=c\n\t\tc=[]\n\tprint b , "A[1]"\n\tif a[2]==\'All\':\n\t   \tb=b\n\telse:\n\t   \tsel=db(db.company.name==a[2]).select()[0]\n\t   \tsel=db(db.Insurance.company_id==int(sel[\'id\'])).select()\n\t\tsel=list(sel)\n\t   \tfor i in sel:\n\t\t\tif( i in b):\n\t\t\t\tc.append(i)\n\t\tb=c\n\t\tc=[]\n\tprint b , "A[2]"\n\tif a[3]==\'None\':\n\t   \tb=b\n\telse:\n\t   \tsel=db(db.Insurance.min_age<=int(a[3]) and db.Insurance.max_age>=int(a[3])).select()\n\t\tsel=list(sel)\n\t\tfor i in sel:\n\t\t\tif( i in b):\n\t\t\t\tc.append(i)\n\t\tb=c\n\t\tc=[]\n\tprint b , "A[3]",a[3]\n\tif a[4]==\'None\':\n\t   \tb=b\n\telse:\n\t   \tsel=db(db.Insurance.min_cover<=int(a[4]) and db.Insurance.max_cover>=int(a[4])).select()\n\t\tfor i in sel:\n\t\t\tif( i in b):\n\t\t\t\tc.append(i)\n\t\tb=c\n\t\tc=[]\n\tif a[5]==\'Any\':\n\t   \tb=b\n\telse:\n\t   \ta[5].replace("_"," ")\n\t   \tsel=db(db.Insurance.target_income==a[5]).select()\n\t\tfor i in sel:\n\t\t\tif( i in b):\n\t\t\t\tc.append(i)\n\t\tb=c\n\t\tc=[]\n\ta=[]\n\tc=[]\n\tb=list(b)\n\treturn dict(b=b)\n\nresponse._vars=response._caller(buy_policy)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__hash__'
+p12
+S"<method-wrapper '__hash__' of exceptions.NameError object>"
+p13
+sS'__setattr__'
+p14
+S"<method-wrapper '__setattr__' of exceptions.NameError object>"
+p15
+sS'__reduce_ex__'
+p16
+S'<built-in method __reduce_ex__ of exceptions.NameError object>'
+p17
+sS'__getslice__'
+p18
+S"<method-wrapper '__getslice__' of exceptions.NameError object>"
+p19
+sS'__getitem__'
+p20
+S"<method-wrapper '__getitem__' of exceptions.NameError object>"
+p21
+sS'__setstate__'
+p22
+S'<built-in method __setstate__ of exceptions.NameError object>'
+p23
+sS'args'
+p24
+S'("global name \'date\' is not defined",)'
+p25
+sS'__reduce__'
+p26
+S'<built-in method __reduce__ of exceptions.NameError object>'
+p27
+sS'__str__'
+p28
+S"<method-wrapper '__str__' of exceptions.NameError object>"
+p29
+sS'__format__'
+p30
+S'<built-in method __format__ of exceptions.NameError object>'
+p31
+sS'__getattribute__'
+p32
+S"<method-wrapper '__getattribute__' of exceptions.NameError object>"
+p33
+sS'__class__'
+p34
+S"<type 'exceptions.NameError'>"
+p35
+sS'__unicode__'
+p36
+S'<built-in method __unicode__ of exceptions.NameError object>'
+p37
+sS'__delattr__'
+p38
+S"<method-wrapper '__delattr__' of exceptions.NameError object>"
+p39
+sS'__subclasshook__'
+p40
+S'<built-in method __subclasshook__ of type object>'
+p41
+sS'__repr__'
+p42
+S"<method-wrapper '__repr__' of exceptions.NameError object>"
+p43
+sS'__dict__'
+p44
+S'{}'
+p45
+sS'__sizeof__'
+p46
+S'<built-in method __sizeof__ of exceptions.NameError object>'
+p47
+sS'__doc__'
+p48
+S"'Name not found globally.'"
+p49
+sS'__init__'
+p50
+S"<method-wrapper '__init__' of exceptions.NameError object>"
+p51
+sS'__new__'
+p52
+S'<built-in method __new__ of type object>'
+p53
+ssS'evalue'
+p54
+S"global name 'date' is not defined"
+p55
+sS'request'
+p56
+cgluon.html
+XML_unpickle
+p57
+(S's\x90]\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">ajax</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">application</td><td valign="top">:</td><td><div>Project</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">args</td><td valign="top">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>2</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">body</td><td valign="top">:</td><td><div>&lt;open file &#x27;&lt;fdopen&gt;&#x27;, mode &#x27;w+b&#x27; at 0x7f43c0126f60&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cid</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">client</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">controller</td><td valign="top">:</td><td><div>default</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cookies</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">session_id_admin</td><td valign="top">:</td><td><div>127.0.0.1-2f6cc9d6-e689-443f-8630-3a075b8d411d<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id_project</td><td valign="top">:</td><td><div>127.0.0.1-35dcac5d-4440-43f1-9e59-840158820e13<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">env</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">app_folders</td><td valign="top">:</td><td><div>set([&#x27;/home/samfisher/iiith/Semester 2/web2py/applications/admin/&#x27;, &#x27;/home/samfisher/iiith/Semester 2/web2py/applications/Project/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">applications_parent</td><td valign="top">:</td><td><div>/home/samfisher/iiith/Semester 2/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_args</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_options</td><td valign="top">:</td><td><div>&lt;Values at 0x24d4290: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;ubuntu&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/samfisher/iiith/Semester 2/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;profiler_filename&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;ani&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;interfaces&#x27;: None, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">content_length</td><td valign="top">:</td><td><div>883</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">content_type</td><td valign="top">:</td><td><div>multipart/form-data; boundary=----WebKitFormBoundaryTJvjw15kGYADCNZc</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">db_sessions</td><td valign="top">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">debugging</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">gluon_parent</td><td valign="top">:</td><td><div>/home/samfisher/iiith/Semester 2/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept</td><td valign="top">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept_encoding</td><td valign="top">:</td><td><div>gzip,deflate,sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept_language</td><td valign="top">:</td><td><div>en-US,en;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_cache_control</td><td valign="top">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_connection</td><td valign="top">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_content_length</td><td valign="top">:</td><td><div>883</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_content_type</td><td valign="top">:</td><td><div>multipart/form-data; boundary=----WebKitFormBoundaryTJvjw15kGYADCNZc</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_cookie</td><td valign="top">:</td><td><div>session_id_project=127.0.0.1-35dcac5d-4440-43f1-9e59-840158820e13; session_id_admin=127.0.0.1-2f6cc9d6-e689-443f-8630-3a075b8d411d</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_host</td><td valign="top">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_origin</td><td valign="top">:</td><td><div>http://127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_referer</td><td valign="top">:</td><td><div>http://127.0.0.1:8000/Project/default/buy_policy/1/2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_user_agent</td><td valign="top">:</td><td><div>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_jython</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_pypy</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">local_hosts</td><td valign="top">:</td><td><div><table><tr><td><div>::1</div></td></tr><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr><tr><td><div>ubuntu</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path_info</td><td valign="top">:</td><td><div>/Project/default/buy_policy/1/2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">query_string</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remote_addr</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remote_port</td><td valign="top">:</td><td><div>41682</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">request_method</td><td valign="top">:</td><td><div>POST</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">request_uri</td><td valign="top">:</td><td><div>/Project/default/buy_policy/1/2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">script_name</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_name</td><td valign="top">:</td><td><div>ubuntu</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_port</td><td valign="top">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_protocol</td><td valign="top">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_software</td><td valign="top">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_path</td><td valign="top">:</td><td><div>/home/samfisher/iiith/Semester 2/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_version</td><td valign="top">:</td><td><div><table><tr><td><div>2</div></td></tr><tr><td><div>4</div></td></tr><tr><td><div>2</div></td></tr><tr><td><div>stable</div></td></tr><tr><td><div>datetime.datetime(2013, 3, 4, 3, 26, 21)</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_errors</td><td valign="top">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x7f43c91831e0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_file_wrapper</td><td valign="top">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x2401ce8&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_input</td><td valign="top">:</td><td><div>&lt;socket._fileobject object at 0x26029d0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_multiprocess</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_multithread</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_run_once</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_url_scheme</td><td valign="top">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_version</td><td valign="top">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">extension</td><td valign="top">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">folder</td><td valign="top">:</td><td><div>/home/samfisher/iiith/Semester 2/web2py/applications/Project/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">function</td><td valign="top">:</td><td><div>buy_policy</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">get_vars</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">global_settings</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">app_folders</td><td valign="top">:</td><td><div>set([&#x27;/home/samfisher/iiith/Semester 2/web2py/applications/admin/&#x27;, &#x27;/home/samfisher/iiith/Semester 2/web2py/applications/Project/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">applications_parent</td><td valign="top">:</td><td><div>/home/samfisher/iiith/Semester 2/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_args</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_options</td><td valign="top">:</td><td><div>&lt;Values at 0x24d4290: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;ubuntu&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/samfisher/iiith/Semester 2/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;profiler_filename&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;ani&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;interfaces&#x27;: None, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">db_sessions</td><td valign="top">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">debugging</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">gluon_parent</td><td valign="top">:</td><td><div>/home/samfisher/iiith/Semester 2/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_jython</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_pypy</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">local_hosts</td><td valign="top">:</td><td><div><table><tr><td><div>::1</div></td></tr><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr><tr><td><div>ubuntu</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_version</td><td valign="top">:</td><td><div><table><tr><td><div>2</div></td></tr><tr><td><div>4</div></td></tr><tr><td><div>2</div></td></tr><tr><td><div>stable</div></td></tr><tr><td><div>datetime.datetime(2013, 3, 4, 3, 26, 21)</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_https</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_local</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_restful</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">now</td><td valign="top">:</td><td><div>datetime.datetime(2013, 12, 2, 7, 0, 36, 197318)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">post_vars</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">age</td><td valign="top">:</td><td><div>50</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cover</td><td valign="top">:</td><td><div>15</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">duration</td><td valign="top">:</td><td><div>15</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">marital_status</td><td valign="top">:</td><td><div>Married</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">premium</td><td valign="top">:</td><td><div>20</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">target_income</td><td valign="top">:</td><td><div>5-10 lakhs</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">raw_args</td><td valign="top">:</td><td><div>1/2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">raw_extension</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">url</td><td valign="top">:</td><td><div>/Project/default/buy_policy/1/2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">utcnow</td><td valign="top">:</td><td><div>datetime.datetime(2013, 12, 2, 1, 30, 36, 197355)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">uuid</td><td valign="top">:</td><td><div>Project/127.0.0.1.2013-12-02.07-00-36.23cc0aa4-51f9-48c5-a762-b8636d6fea00</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">vars</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">age</td><td valign="top">:</td><td><div>50</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cover</td><td valign="top">:</td><td><div>15</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">duration</td><td valign="top">:</td><td><div>15</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">marital_status</td><td valign="top">:</td><td><div>Married</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">premium</td><td valign="top">:</td><td><div>20</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">target_income</td><td valign="top">:</td><td><div>5-10 lakhs</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">environ</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">CONTENT_LENGTH</td><td valign="top">:</td><td><div>883</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">CONTENT_TYPE</td><td valign="top">:</td><td><div>multipart/form-data; boundary=----WebKitFormBoundaryTJvjw15kGYADCNZc</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT</td><td valign="top">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT_ENCODING</td><td valign="top">:</td><td><div>gzip,deflate,sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT_LANGUAGE</td><td valign="top">:</td><td><div>en-US,en;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_CACHE_CONTROL</td><td valign="top">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_CONNECTION</td><td valign="top">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_CONTENT_LENGTH</td><td valign="top">:</td><td><div>883</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_CONTENT_TYPE</td><td valign="top">:</td><td><div>multipart/form-data; boundary=----WebKitFormBoundaryTJvjw15kGYADCNZc</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_COOKIE</td><td valign="top">:</td><td><div>session_id_project=127.0.0.1-35dcac5d-4440-43f1-9e59-840158820e13; session_id_admin=127.0.0.1-2f6cc9d6-e689-443f-8630-3a075b8d411d</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_HOST</td><td valign="top">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_ORIGIN</td><td valign="top">:</td><td><div>http://127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_REFERER</td><td valign="top">:</td><td><div>http://127.0.0.1:8000/Project/default/buy_policy/1/2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_USER_AGENT</td><td valign="top">:</td><td><div>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">PATH_INFO</td><td valign="top">:</td><td><div>/Project/default/buy_policy/1/2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">QUERY_STRING</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REMOTE_ADDR</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REMOTE_PORT</td><td valign="top">:</td><td><div>41682</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REQUEST_METHOD</td><td valign="top">:</td><td><div>POST</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REQUEST_URI</td><td valign="top">:</td><td><div>/Project/default/buy_policy/1/2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SCRIPT_NAME</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_NAME</td><td valign="top">:</td><td><div>ubuntu</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_PORT</td><td valign="top">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_PROTOCOL</td><td valign="top">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_SOFTWARE</td><td valign="top">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.errors</td><td valign="top">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x7f43c91831e0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.file_wrapper</td><td valign="top">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x2401ce8&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.input</td><td valign="top">:</td><td><div>&lt;open file &#x27;&lt;fdopen&gt;&#x27;, mode &#x27;w+b&#x27; at 0x7f43c0126f60&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.multiprocess</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.multithread</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.run_once</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.url_scheme</td><td valign="top">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.version</td><td valign="top">:</td><td><div>1</div></td></tr></table></div></td></tr></table></div></td></tr></table></div>'
+tRp58
+sS'frames'
+p59
+(lp60
+(dp61
+S'file'
+p62
+S'/home/samfisher/iiith/Semester 2/web2py/gluon/restricted.py'
+p63
+sS'dump'
+p64
+(dp65
+S'environment'
+p66
+S"{'A': <class 'gluon.html.A'>, 'AddCompany': <function AddCompany>, 'AddCompare': <function AddCompare>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, ...}"
+p67
+sS'ccode'
+p68
+S'<code object <module> at 0x7f43c01fb2b0, file "/...cations/Project/controllers/default.py", line 11>'
+p69
+ssS'lnum'
+p70
+I212
+sS'lines'
+p71
+(dp72
+I207
+S'    try:'
+p73
+sI208
+S'        if isinstance(code, types.CodeType):'
+p74
+sI209
+S'            ccode = code'
+p75
+sI210
+S'        else:'
+p76
+sI211
+S'            ccode = compile2(code, layer)'
+p77
+sI212
+S'        exec ccode in environment'
+p78
+sI213
+S'    except HTTP:'
+p79
+sI214
+S'        raise'
+p80
+sI215
+S'    except RestrictedError:'
+p81
+sI216
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p82
+ssS'call'
+p83
+S"(code='# -*- coding: utf-8 -*-\\n# this file is released ...=b)\\n\\nresponse._vars=response._caller(buy_policy)\\n', environment={'A': <class 'gluon.html.A'>, 'AddCompany': <function AddCompany>, 'AddCompare': <function AddCompare>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, ...}, layer='/home/samfisher/iiith/Semester 2/web2py/applications/Project/controllers/default.py')"
+p84
+sS'func'
+p85
+S'restricted'
+p86
+sa(dp87
+g62
+S'/home/samfisher/iiith/Semester 2/web2py/applications/Project/controllers/default.py'
+p88
+sg64
+(dp89
+sg70
+I694
+sg71
+(dp90
+I683
+S'\t   \tsel=db(db.Insurance.target_income==a[5]).select()'
+p91
+sI684
+S'\t\tfor i in sel:'
+p92
+sI685
+S'\t\t\tif( i in b):'
+p93
+sI686
+S'\t\t\t\tc.append(i)'
+p94
+sI687
+S'\t\tb=c'
+p95
+sI688
+S'\t\tc=[]'
+p96
+sI689
+S'\ta=[]'
+p97
+sI690
+S'\tc=[]'
+p98
+sI691
+S'\tb=list(b)'
+p99
+sI692
+S'\treturn dict(b=b)'
+p100
+ssg83
+S'()'
+p101
+sg85
+S'<module>'
+p102
+sa(dp103
+g62
+S'/home/samfisher/iiith/Semester 2/web2py/gluon/globals.py'
+p104
+sg64
+(dp105
+S'self'
+p106
+S'undefined'
+p107
+sS'f'
+S'<function buy_policy>'
+p108
+ssg70
+I193
+sg71
+(dp109
+I192
+S'        self._vars = None'
+p110
+sI193
+S'        self._caller = lambda f: f()'
+p111
+sI194
+S'        self._view_environment = None'
+p112
+sI195
+S'        self._custom_commit = None'
+p113
+sI196
+S'        self._custom_rollback = None'
+p114
+sI197
+S''
+sI188
+S'        self.menu = []             # used by the default view layout'
+p115
+sI189
+S'        self.files = []            # used by web2py_ajax.html'
+p116
+sI190
+S'        self.generic_patterns = []  # patterns to allow generic views'
+p117
+sI191
+S"        self.delimiters = ('{{', '}}')"
+p118
+ssg83
+S'(f=<function buy_policy>)'
+p119
+sg85
+S'<lambda>'
+p120
+sa(dp121
+g62
+S'/home/samfisher/iiith/Semester 2/web2py/gluon/tools.py'
+p122
+sg64
+(dp123
+S'action'
+p124
+S'<function buy_policy>'
+p125
+sS'a'
+S'()'
+p126
+sS'b'
+g45
+ssg70
+I2942
+sg71
+(dp127
+I2944
+S'            f.__name__ = action.__name__'
+p128
+sI2945
+S'            f.__dict__.update(action.__dict__)'
+p129
+sI2946
+S'            return f'
+p130
+sI2937
+S'                    flag = condition'
+p131
+sI2938
+S'                if not flag:'
+p132
+sI2939
+S'                    current.session.flash = self.messages.access_denied'
+p133
+sI2940
+S'                    return call_or_redirect('
+p134
+sI2941
+S'                        self.settings.on_failed_authorization)'
+p135
+sI2942
+S'                return action(*a, **b)'
+p136
+sI2943
+S'            f.__doc__ = action.__doc__'
+p137
+ssg83
+S'(*a=(), **b={})'
+p138
+sg85
+S'f'
+sa(dp139
+g62
+S'/home/samfisher/iiith/Semester 2/web2py/applications/Project/controllers/default.py'
+p140
+sg64
+(dp141
+S'a'
+g45
+sS'form.vars'
+p142
+S"<Storage {'premium': 20, 'age': 50, 'marital_sta...come': '5-10 lakhs', 'duration': 15, 'id': None}>"
+p143
+sS'form'
+p144
+S'<gluon.sqlhtml.SQLFORM object>'
+p145
+sS'auth.user'
+p146
+S"<Row {'first_name': 'Aniruddh', 'last_name': 'Ka...sword_key': '', 'registration_key': '', 'id': 2}>"
+p147
+sS'global auth'
+p148
+S'<gluon.tools.Auth object>'
+p149
+sS'global datetime'
+p150
+S"<module 'datetime' from '/usr/lib/python2.7/lib-dynload/datetime.x86_64-linux-gnu.so'>"
+p151
+sS'date'
+p152
+g107
+sS'request.now'
+p153
+S'datetime.datetime(2013, 12, 2, 7, 0, 36, 197318)'
+p154
+sS'auth.user.email'
+p155
+S"'ani@123.com'"
+p156
+sS'datetime.delta'
+p157
+g107
+sS'global request'
+p158
+S"<Storage {'function': 'buy_policy', 'body': <ope...6f67d09d9210', '_formname': 'no_table/create'}>}>"
+p159
+sS'form.vars.name'
+p160
+S'None'
+p161
+ssg70
+I564
+sg71
+(dp162
+I559
+S'\t\tprint a'
+p163
+sI560
+S'\t\tdb.BuyInsurance.insert(**a)'
+p164
+sI561
+S'\t\tsession.msg="You have successfully booked the policy"'
+p165
+sI562
+S'\t\t#\t\tInserting For scheduler'
+p166
+sI563
+S'\t\ta={}'
+p167
+sI564
+S'\t\ta=[auth.user.email,form.vars.name,date(request.now+datetime.delta(30))]'
+p168
+sI565
+S'\t\tdb.scheduler_task.insert('
+p169
+sI566
+S"\t\tapplication_name='Project/appadmin',"
+p170
+sI567
+S"\t\ttask_name=form.vars.id+'+'+auth.user.email,"
+p171
+sI568
+S"\t\tgroup_name='main',"
+p172
+ssg83
+S'()'
+p173
+sg85
+S'buy_policy'
+p174
+sasS'pyver'
+p175
+S'Python 2.7.5+: /usr/bin/python (prefix: /usr)'
+p176
+sS'session'
+p177
+g57
+(S'sk\n\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">auth</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">expiration</td><td valign="top">:</td><td><div>3600</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">hmac_key</td><td valign="top">:</td><td><div>3eef5ae4-822a-4ab3-9334-8fa213614a35</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_visit</td><td valign="top">:</td><td><div>datetime.datetime(2013, 12, 2, 6, 56, 46, 119212)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remember</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">user</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">email</td><td valign="top">:</td><td><div>ani@123.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">first_name</td><td valign="top">:</td><td><div>Aniruddh</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">id</td><td valign="top">:</td><td><div>2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_name</td><td valign="top">:</td><td><div>Kanojia</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">r_type</td><td valign="top">:</td><td><div>customer</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">registration_id</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">registration_key</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">reset_password_key</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">user_groups</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">2</td><td valign="top">:</td><td><div>user_2</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">compare</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">flash</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_orderby</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_query</td><td valign="top">:</td><td><div>db.auth_user.id&gt;0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">msg</td><td valign="top">:</td><td><div>You have successfully booked the policy</div></td></tr></table></div>'
+tRp178
+sS'etype'
+p179
+S"<type 'exceptions.NameError'>"
+p180
+sS'date'
+p181
+S'Mon Dec  2 07:00:36 2013'
+p182
+sS'response'
+p183
+g57
+(S's\xd3,\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">body</td><td valign="top">:</td><td><div>&lt;cStringIO.StringO object at 0x7f43a852a068&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cookies</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">session_id_project</td><td valign="top">:</td><td><div>127.0.0.1-35dcac5d-4440-43f1-9e59-840158820e13<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">delimiters</td><td valign="top">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">files</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">flash</td><td valign="top">:</td><td><div>Success!</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">generic_patterns</td><td valign="top">:</td><td><div><table><tr><td><div>*</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">google_analytics_id</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">headers</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">X-Powered-By</td><td valign="top">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">logo</td><td valign="top">:</td><td><div><a class="brand" href="http://www.web2py.com/"><b>web<span>2</span>py</b>&trade;&nbsp;</a></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">menu</td><td valign="top">:</td><td><div><table><tr><td><div><table><tr><td><div>Home</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Project/default/index</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div><span class="highlighted">web2py</span></div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://web2py.com</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>My Sites</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/site</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>This App</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/design/Project</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Controller&#x27;&gt;, False, &#x27;/admin/default/edit/Project/controllers/default.py&#x27;), (&lt;lazyT &#x27;View&#x27;&gt;, False, &#x27;/admin/default/edit/Project/views/default/buy_policy.html&#x27;), (&lt;lazyT &#x27;Layout&#x27;&gt;, False, &#x27;/admin/default/edit/Project/views/layout.html&#x27;), (&lt;lazyT &#x27;Stylesheet&#x27;&gt;, False, &#x27;/admin/default/edit/Project/static/css/web2py.css&#x27;), (&lt;lazyT &#x27;DB Model&#x27;&gt;, False, &#x27;/admin/default/edit/Project/models/db.py&#x27;), (&lt;lazyT &#x27;Menu Model&#x27;&gt;, False, &#x27;/admin/default/edit/Project/models/menu.py&#x27;), (&lt;lazyT &#x27;Database&#x27;&gt;, False, &#x27;/Project/appadmin/index&#x27;), (&lt;lazyT &#x27;Errors&#x27;&gt;, False, &#x27;/admin/default/errors/Project&#x27;), (&lt;lazyT &#x27;About&#x27;&gt;, False, &#x27;/admin/default/about/Project&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>web2py.com</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Download&#x27;&gt;, False, &#x27;http://www.web2py.com/examples/default/download&#x27;), (&lt;lazyT &#x27;Support&#x27;&gt;, False, &#x27;http://www.web2py.com/examples/default/support&#x27;), (&lt;lazyT &#x27;Demo&#x27;&gt;, False, &#x27;http://web2py.com/demo_admin&#x27;), (&lt;lazyT &#x27;Quick Examples&#x27;&gt;, False, &#x27;http://web2py.com/examples/default/examples&#x27;), (&lt;lazyT &#x27;FAQ&#x27;&gt;, False, &#x27;http://web2py.com/AlterEgo&#x27;), (&lt;lazyT &#x27;Videos&#x27;&gt;, False, &#x27;http://www.web2py.com/examples/default/videos/&#x27;), (&lt;lazyT &#x27;Free Applications&#x27;&gt;, False, &#x27;http://web2py.com/appliances&#x27;), (&lt;lazyT &#x27;Plugins&#x27;&gt;, False, &#x27;http://web2py.com/plugins&#x27;), (&lt;lazyT &#x27;Layouts&#x27;&gt;, False, &#x27;http://web2py.com/layouts&#x27;), (&lt;lazyT &#x27;Recipes&#x27;&gt;, False, &#x27;http://web2pyslices.com/&#x27;), (&lt;lazyT &#x27;Semantic&#x27;&gt;, False, &#x27;http://web2py.com/semantic&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Documentation</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Preface&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/00&#x27;), (&lt;lazyT &#x27;Introduction&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/01&#x27;), (&lt;lazyT &#x27;Python&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/02&#x27;), (&lt;lazyT &#x27;Overview&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/03&#x27;), (&lt;lazyT &#x27;The Core&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/04&#x27;), (&lt;lazyT &#x27;The Views&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/05&#x27;), (&lt;lazyT &#x27;Database&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/06&#x27;), (&lt;lazyT &#x27;Forms and Validators&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/07&#x27;), (&lt;lazyT &#x27;Email and SMS&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/08&#x27;), (&lt;lazyT &#x27;Access Control&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/09&#x27;), (&lt;lazyT &#x27;Services&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/10&#x27;), (&lt;lazyT &#x27;Ajax Recipes&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/11&#x27;), (&lt;lazyT &#x27;Components and Plugins&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/12&#x27;), (&lt;lazyT &#x27;Deployment Recipes&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/13&#x27;), (&lt;lazyT &#x27;Other Recipes&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/14&#x27;), (&lt;lazyT &#x27;Buy this book&#x27;&gt;, False, &#x27;http://stores.lulu.com/web2py&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Community</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>None</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Groups&#x27;&gt;, False, &#x27;http://www.web2py.com/examples/default/usergroups&#x27;), (&lt;lazyT &#x27;Twitter&#x27;&gt;, False, &#x27;http://twitter.com/web2py&#x27;), (&lt;lazyT &#x27;Live Chat&#x27;&gt;, False, &#x27;http://webchat.freenode.net/?channels=web2py&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Plugins</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>None</div></td></tr><tr><td><div>[(&#x27;plugin_wiki&#x27;, False, &#x27;http://web2py.com/examples/default/download&#x27;), (&lt;lazyT &#x27;Other Plugins&#x27;&gt;, False, &#x27;http://web2py.com/plugins&#x27;), (&lt;lazyT &#x27;Layout Plugins&#x27;&gt;, False, &#x27;http://web2py.com/layouts&#x27;)]</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">meta</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">author</td><td valign="top">:</td><td><div>Your Name &lt;you@example.com&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">description</td><td valign="top">:</td><td><div>a cool new app</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">generator</td><td valign="top">:</td><td><div>Web2py Web Framework</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">keywords</td><td valign="top">:</td><td><div>web2py, python, framework</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">models_to_run</td><td valign="top">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^default/\\w+\\.py$</div></td></tr><tr><td><div>^default/buy_policy/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">postprocessing</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_cookie_expires</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_data_name</td><td valign="top">:</td><td><div>session_data_project</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_file</td><td valign="top">:</td><td><div>&lt;open file &#x27;/home/samfisher/iiith/Semester 2/web2py/applications/Project/sessions/127.0.0.1-35dcac5d-4440-43f1-9e59-840158820e13&#x27;, mode &#x27;rb+&#x27; at 0x24bdd20&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_filename</td><td valign="top">:</td><td><div>/home/samfisher/iiith/Semester 2/web2py/applications/Project/sessions/127.0.0.1-35dcac5d-4440-43f1-9e59-840158820e13</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id</td><td valign="top">:</td><td><div>127.0.0.1-35dcac5d-4440-43f1-9e59-840158820e13</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id_name</td><td valign="top">:</td><td><div>session_id_project</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_locked</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_new</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_storage_type</td><td valign="top">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">status</td><td valign="top">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">subtitle</td><td valign="top">:</td><td><div>customize me!</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">title</td><td valign="top">:</td><td><div>Project</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">view</td><td valign="top">:</td><td><div>default/buy_policy.html</div></td></tr></table></div>'
+tRp184
+sS'locals'
+p185
+(dp186
+S'a'
+g45
+sS'rID'
+p187
+S'1'
+sS'sel'
+p188
+S"<Row {'max_duration': 20, 'max_limit': None, 'ca...None, 'no_of_wheels': None, 'min_members': None}>"
+p189
+sS'ID'
+p190
+S'1'
+sS'form'
+p191
+S'<gluon.sqlhtml.SQLFORM object>'
+p192
+sssS'traceback'
+p193
+S'Traceback (most recent call last):\n  File "/home/samfisher/iiith/Semester 2/web2py/gluon/restricted.py", line 212, in restricted\n    exec ccode in environment\n  File "/home/samfisher/iiith/Semester 2/web2py/applications/Project/controllers/default.py", line 694, in <module>\n  File "/home/samfisher/iiith/Semester 2/web2py/gluon/globals.py", line 193, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/samfisher/iiith/Semester 2/web2py/gluon/tools.py", line 2942, in f\n    return action(*a, **b)\n  File "/home/samfisher/iiith/Semester 2/web2py/applications/Project/controllers/default.py", line 564, in buy_policy\n    a=[auth.user.email,form.vars.name,date(request.now+datetime.delta(30))]\nNameError: global name \'date\' is not defined\n'
+p194
+s.

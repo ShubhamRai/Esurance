@@ -1,0 +1,118 @@
+{{extend 'layout.html'}}
+<html>
+<head>
+<style>
+.carousel-indicators li{
+
+	list-style:none;
+}
+.slide-img{
+	width:99%;
+	height:220px;
+	border:1px solid black;
+}
+.myHead{
+	height:260px;
+	width:100%;
+
+
+}
+.Serbutton:link{
+	text-decoration:none;
+	border-radius:0;
+	box-shadow: 1px 1px 5px #888888 ;
+	padding:8px;
+
+	color:black;
+}
+.Serbutton:hover{
+	background-color:#00FF66;
+	color:#000000;
+	font-weight:bold;
+	padding:7px;
+	transition:background-color 2s;
+
+}
+
+
+/* MARKETING CONTENT
+-------------------------------------------------- */
+
+/* Pad the edges of the mobile views a bit */
+.marketing {
+	  padding-left: 15px;
+	    padding-right: 15px;
+}
+
+/* Center align the text within the three columns below the carousel */
+.marketing .col-lg-4 {
+	  text-align: center;
+	    margin-bottom: 20px;
+}
+.marketing h2 {
+	  font-weight: normal;
+}
+.marketing .col-lg-4 p {
+	  margin-left: 10px;
+	    margin-right: 10px;
+}
+
+
+/* Featurettes
+------------------------- */
+
+.featurette-divider {
+	  margin: 80px 0; /* Space out the Bootstrap <hr> more */
+}
+
+/* Thin out the marketing headings */
+.featurette-heading {
+	  font-weight: 300;
+	    line-height: 1;
+	      letter-spacing: -1px;
+}
+
+
+</style>
+<script>
+$('#myCarousel').carousel({
+interval:2000
+})
+
+$('#myModal').modal()
+
+</script>
+</head>
+
+<body>
+
+
+</body>
+</html>
+<br/>
+<br/>
+<ul>
+</ul>
+<div class="container" style="">
+	<a class="btn btn-primary" href="{{=URL(r=request,f='FilterPolicy')}}">Filter Policies</a>
+	<h2>Book Policies</h2>
+	<!-- Three columns of text below the carousel -->
+	<table>
+		<tr width="100%">
+			<td href="{{=URL(r=request,f='life_policy_details')}}" width="45%">
+			<img class="img-circle" src="{{=URL('static','images/8th.gif')}}" alt="Generic placeholder image">
+			<h2><a >Life Policies</a></h2></td>
+		<td href="{{=URL(r=request,f='health_policy_details')}}" width="45%"><img class="img-circle" src="{{=URL('static','images/9.jpg')}}" alt="Generic placeholder image">
+			<h2><a >Health Policies</a></h2></td>
+		<td href="{{=URL(r=request,f='other_policy_details')}}" width="40%">	<img class="img-circle" src="{{=URL('static','images/10.jpg')}}" alt="Generic placeholder image">
+				<h2>
+					<a >Other Policies</a></h2></td>
+
+		</table>
+		<br/>
+		<br/>
+		<h4>About Life Insurance</h4>
+		<p>Insurance can be divided into two categories of Life and General Insurance. In Life Insurance you can compare Term Insurance, Pension Plans or Retirement Plans, Child Plans and Investment Plans; both Endowment and Unit Linked Plans. In General Insurance you can compare Health Insurance or Mediclaim Plans, Car Insurance, 2 Wheeler Insurance, Travel Insurance as well as Home Insurance.</p>
+
+
+</div>
